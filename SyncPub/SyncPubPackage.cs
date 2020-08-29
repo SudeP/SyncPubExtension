@@ -1,19 +1,10 @@
 ﻿using System;
-using System.ComponentModel.Design;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.Win32;
 using Task = System.Threading.Tasks.Task;
 
-namespace SyncPubExtension
+namespace SyncPub
 {
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.
@@ -33,27 +24,15 @@ namespace SyncPubExtension
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
+    [Guid(SyncPubPackage.PackageGuidString)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    [ProvideToolWindow(typeof(SyncPubToolWindow))]
-    [Guid(SyncPubToolWindowPackage.PackageGuidString)]
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
-    public sealed class SyncPubToolWindowPackage : AsyncPackage
+    [ProvideToolWindow(typeof(SyncPubAsyncToolWindow))]
+    public sealed class SyncPubPackage : AsyncPackage
     {
         /// <summary>
-        /// SyncPubToolWindowPackage GUID string.
+        /// SyncPubPackage GUID string.
         /// </summary>
-        public const string PackageGuidString = "a294222e-c27a-4fdc-8218-b422df20a57a";
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SyncPubToolWindowPackage"/> class.
-        /// </summary>
-        public SyncPubToolWindowPackage()
-        {
-            // Inside this method you can place any initialization code that does not require
-            // any Visual Studio service because at this point the package object is created but
-            // not sited yet inside Visual Studio environment. The place to do all the other
-            // initialization is the Initialize method.
-        }
+        public const string PackageGuidString = "d4f950da-7e2d-4bcf-a8f2-708ca44943ca";
 
         #region Package Members
 
@@ -69,7 +48,7 @@ namespace SyncPubExtension
             // When initialized asynchronously, the current thread may be a background thread at this point.
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-            await SyncPubToolWindowCommand.InitializeAsync(this);
+            await SyncPubAsyncToolWindowCommand.InitializeAsync(this);
         }
 
         #endregion

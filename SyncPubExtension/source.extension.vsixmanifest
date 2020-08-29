@@ -3,7 +3,7 @@
     <Metadata>
         <Identity Id="b4fccbcd-0846-40cc-9c97-5d8a6a38f860" Version="0.1" Language="en-US" Publisher="Ahmet Can Duyar" />
         <DisplayName>SyncPubExtension</DisplayName>
-        <Description xml:space="preserve">Extension Pack</Description>
+        <Description xml:space="preserve">Publish Manager</Description>
     </Metadata>
     <Installation>
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.0, 17.0)" />

@@ -38,6 +38,7 @@
         OleDbCommand command = null;
         bool usePublish;
         string _p, rootPath, profileName;
+        DTE _applicationObject;
         /// <summary>
         /// Handles click on the button by displaying a message box.
         /// </summary>
@@ -52,32 +53,13 @@
             if (project is null)
                 project = GetActiveProject();
 
-            var pubProb = project.Properties.Item("Publish");
-
-            var asd = pubProb.Collection;
-
-            var asd123 = asd.Cast<Property>().ToList();
-
-            string str = string.Empty;
-
-            foreach (var item in asd123)
-            {
-                try
-                {
-                    str += item.Name + "\t" + item.Value is null ? "" : item.Value + Environment.NewLine;
-
-                }
-                catch (Exception)
-                {
-                    str += item.Name + "\t" + " exception " + Environment.NewLine;
-                }
-            }
-
             if (project is null)
             {
                 llog("please open project !");
                 return;
             }
+
+            _applicationObject = project.DTE;
 
             if (!CreateNewAccessDatabaseOrOpen($@"{project.FileName}"))
             {
@@ -192,10 +174,19 @@
                 llog("Error !");
                 return;
             }
+            var temp = "";
+
+
             var sb2 = project.DTE.Solution.SolutionBuild as SolutionBuild2;
+            //ChangeProjectContexts(project, "Release");
+            //sb2.BuildProject("Release", project.UniqueName, true);
+            //sb2.PublishProject("Release", project.UniqueName, true);
+            //return;
+            //System.Diagnostics.Process.Start("msbuild.exe", $@"""{project.Name}.csproj"" /p:PublishProfile=""{profileName}.pubxml"" /p:DeployOnBuild=true /p:VisualStudioVersion=""14.0""");
+
             //if (usePublish)
             //{
-            //    project.DTE.ExecuteCommand("ClassViewContextMenus.ClassViewProject.Publish");
+            //    //project.DTE.ExecuteCommand("ClassViewContextMenus.ClassViewProject.Publish");
             //    //llog("Publishing");
             //    ////sb2.Publish(true);
             //    ////sb2.Run();
@@ -228,13 +219,31 @@
         [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter", Justification = "Default event handler naming pattern")]
         public void OpenPublishWindow(object sender, RoutedEventArgs e)
         {
-            project = GetActiveProject(); ;
+            project = GetActiveProject();
             if (project is null)
             {
                 llog("Please select any project");
                 return;
             }
+
             project.DTE.ExecuteCommand("ClassViewContextMenus.ClassViewProject.Publish");
+        }
+        private void ChangeProjectContexts(EnvDTE.Project project, string configurationName)
+        {
+            EnvDTE.SolutionConfigurations solutionConfigurations;
+
+            solutionConfigurations = _applicationObject.Solution.SolutionBuild.SolutionConfigurations;
+
+            foreach (EnvDTE80.SolutionConfiguration2 solutionConfiguration2 in solutionConfigurations)
+            {
+                foreach (EnvDTE.SolutionContext solutionContext in solutionConfiguration2.SolutionContexts)
+                {
+                    if (solutionContext.ProjectName == project.UniqueName)
+                    {
+                        solutionContext.ConfigurationName = configurationName;
+                    }
+                }
+            }
         }
         #region Support Method
         public class Files
